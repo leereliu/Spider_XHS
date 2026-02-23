@@ -643,7 +643,7 @@ class XHS_Apis():
 
     def get_note_all_out_comment(self, note_id: str, xsec_token: str, cookies_str: str, proxies: dict = None):
         """
-            获取笔记的全部一级评论
+            获取笔记的全部一级评论（最多获取前10条）
             :param note_id 笔记的id
             :param cookies_str 你的cookies
             返回笔记的全部一级评论
@@ -655,17 +655,27 @@ class XHS_Apis():
                 success, msg, res_json = self.get_note_out_comment(note_id, cursor, xsec_token, cookies_str, proxies)
                 if not success:
                     raise Exception(msg)
-                comments = res_json["data"]["comments"]
-                if 'cursor' in res_json["data"]:
-                    cursor = str(res_json["data"]["cursor"])
+                
+                data = res_json.get("data", {})
+                comments = data.get("comments", [])
+                
+                note_out_comment_list.extend(comments)
+                
+                if len(note_out_comment_list) >= 10:
+                    note_out_comment_list = note_out_comment_list[:10]
+                    break
+                    
+                if 'cursor' in data and data['cursor']:
+                    cursor = str(data["cursor"])
                 else:
                     break
-                note_out_comment_list.extend(comments)
-                if len(note_out_comment_list) == 0 or not res_json["data"]["has_more"]:
+                if len(note_out_comment_list) == 0 or not data.get("has_more", False):
                     break
         except Exception as e:
             success = False
             msg = str(e)
+            if len(note_out_comment_list) > 0:
+                success = True
         return success, msg, note_out_comment_list
 
     def get_note_inner_comment(self, comment: dict, cursor: str, xsec_token: str, cookies_str: str, proxies: dict = None):
@@ -700,32 +710,53 @@ class XHS_Apis():
 
     def get_note_all_inner_comment(self, comment: dict, xsec_token: str, cookies_str: str, proxies: dict = None):
         """
-            获取笔记的全部二级评论
+            获取笔记的全部二级评论（最多获取前5条）
             :param comment 笔记的一级评论
             :param cookies_str 你的cookies
             返回笔记的全部二级评论
         """
         try:
-            if not comment['sub_comment_has_more']:
+            if 'sub_comments' not in comment:
+                comment['sub_comments'] = []
+                
+            if len(comment.get('sub_comments', [])) >= 5:
+                comment['sub_comments'] = comment['sub_comments'][:5]
                 return True, 'success', comment
-            cursor = comment['sub_comment_cursor']
+                
+            if not comment.get('sub_comment_has_more', False):
+                return True, 'success', comment
+                
+            cursor = comment.get('sub_comment_cursor', '')
             inner_comment_list = []
+            
             while True:
                 success, msg, res_json = self.get_note_inner_comment(comment, cursor, xsec_token, cookies_str, proxies)
                 if not success:
                     raise Exception(msg)
-                comments = res_json["data"]["comments"]
-                if 'cursor' in res_json["data"]:
-                    cursor = str(res_json["data"]["cursor"])
+                    
+                data = res_json.get("data", {})
+                comments = data.get("comments", [])
+                
+                inner_comment_list.extend(comments)
+                
+                if len(comment.get('sub_comments', [])) + len(inner_comment_list) >= 5:
+                    break
+                    
+                if 'cursor' in data and data['cursor']:
+                    cursor = str(data["cursor"])
                 else:
                     break
-                inner_comment_list.extend(comments)
-                if not res_json["data"]["has_more"]:
+                if not data.get("has_more", False):
                     break
+                    
             comment['sub_comments'].extend(inner_comment_list)
+            comment['sub_comments'] = comment['sub_comments'][:5]
+            
         except Exception as e:
             success = False
             msg = str(e)
+            if 'sub_comments' in comment and len(comment['sub_comments']) > 0:
+                success = True
         return success, msg, comment
 
     def get_note_all_comment(self, url: str, cookies_str: str, proxies: dict = None):
