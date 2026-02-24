@@ -10,6 +10,8 @@ from loguru import logger
     获小红书的api
     :param cookies_str: 你的cookies
 """
+
+
 class XHS_Apis():
     def __init__(self):
         self.base_url = "https://edith.xiaohongshu.com"
@@ -22,8 +24,10 @@ class XHS_Apis():
         res_json = None
         try:
             api = "/api/sns/web/v1/homefeed/category"
-            headers, cookies, data = generate_request_params(cookies_str, api, '', 'GET')
-            response = requests.get(self.base_url + api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, api, '', 'GET')
+            response = requests.get(
+                self.base_url + api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -62,8 +66,10 @@ class XHS_Apis():
                 ],
                 "need_filter_image": False
             }
-            headers, cookies, trans_data = generate_request_params(cookies_str, api, data, 'POST')
-            response = requests.post(self.base_url + api, headers=headers, data=trans_data, cookies=cookies, proxies=proxies)
+            headers, cookies, trans_data = generate_request_params(
+                cookies_str, api, data, 'POST')
+            response = requests.post(
+                self.base_url + api, headers=headers, data=trans_data, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -83,7 +89,8 @@ class XHS_Apis():
         note_list = []
         try:
             while True:
-                success, msg, res_json = self.get_homefeed_recommend(category, cursor_score, refresh_type, note_index, cookies_str, proxies)
+                success, msg, res_json = self.get_homefeed_recommend(
+                    category, cursor_score, refresh_type, note_index, cookies_str, proxies)
                 if not success:
                     raise Exception(msg)
                 if "items" not in res_json["data"]:
@@ -116,8 +123,10 @@ class XHS_Apis():
                 "target_user_id": user_id
             }
             splice_api = splice_str(api, params)
-            headers, cookies, data = generate_request_params(cookies_str, splice_api, '', 'GET')
-            response = requests.get(self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, splice_api, '', 'GET')
+            response = requests.get(
+                self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -134,15 +143,16 @@ class XHS_Apis():
         res_json = None
         try:
             api = f"/api/sns/web/v1/user/selfinfo"
-            headers, cookies, data = generate_request_params(cookies_str, api, '', 'GET')
-            response = requests.get(self.base_url + api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, api, '', 'GET')
+            response = requests.get(
+                self.base_url + api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
             success = False
             msg = str(e)
         return success, msg, res_json
-
 
     def get_user_self_info2(self, cookies_str: str, proxies: dict = None):
         """
@@ -153,8 +163,10 @@ class XHS_Apis():
         res_json = None
         try:
             api = f"/api/sns/web/v2/user/me"
-            headers, cookies, data = generate_request_params(cookies_str, api, '', 'GET')
-            response = requests.get(self.base_url + api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, api, '', 'GET')
+            response = requests.get(
+                self.base_url + api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -182,15 +194,16 @@ class XHS_Apis():
                 "xsec_source": xsec_source,
             }
             splice_api = splice_str(api, params)
-            headers, cookies, data = generate_request_params(cookies_str, splice_api, '', 'GET')
-            response = requests.get(self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, splice_api, '', 'GET')
+            response = requests.get(
+                self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
             success = False
             msg = str(e)
         return success, msg, res_json
-
 
     def get_user_all_notes(self, user_url: str, cookies_str: str, proxies: dict = None):
         """
@@ -209,7 +222,8 @@ class XHS_Apis():
             xsec_token = kvDist['xsec_token'] if 'xsec_token' in kvDist else ""
             xsec_source = kvDist['xsec_source'] if 'xsec_source' in kvDist else "pc_search"
             while True:
-                success, msg, res_json = self.get_user_note_info(user_id, cursor, cookies_str, xsec_token, xsec_source, proxies)
+                success, msg, res_json = self.get_user_note_info(
+                    user_id, cursor, cookies_str, xsec_token, xsec_source, proxies)
                 if not success:
                     raise Exception(msg)
                 notes = res_json["data"]["notes"]
@@ -245,8 +259,10 @@ class XHS_Apis():
                 "xsec_source": xsec_source,
             }
             splice_api = splice_str(api, params)
-            headers, cookies, data = generate_request_params(cookies_str, splice_api, '', 'GET')
-            response = requests.get(self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, splice_api, '', 'GET')
+            response = requests.get(
+                self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -308,8 +324,10 @@ class XHS_Apis():
                 "xsec_source": xsec_source,
             }
             splice_api = splice_str(api, params)
-            headers, cookies, data = generate_request_params(cookies_str, splice_api, '', 'GET')
-            response = requests.get(self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, splice_api, '', 'GET')
+            response = requests.get(
+                self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -379,15 +397,16 @@ class XHS_Apis():
                 "xsec_source": kvDist['xsec_source'] if 'xsec_source' in kvDist else "pc_search",
                 "xsec_token": kvDist['xsec_token']
             }
-            headers, cookies, data = generate_request_params(cookies_str, api, data, 'POST')
-            response = requests.post(self.base_url + api, headers=headers, data=data, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, api, data, 'POST')
+            response = requests.post(
+                self.base_url + api, headers=headers, data=data, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
             success = False
             msg = str(e)
         return success, msg, res_json
-
 
     def get_search_keyword(self, word: str, cookies_str: str, proxies: dict = None):
         """
@@ -403,8 +422,10 @@ class XHS_Apis():
                 "keyword": urllib.parse.quote(word)
             }
             splice_api = splice_str(api, params)
-            headers, cookies, data = generate_request_params(cookies_str, splice_api, '', 'GET')
-            response = requests.get(self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, splice_api, '', 'GET')
+            response = requests.get(
+                self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -510,8 +531,10 @@ class XHS_Apis():
                     "avif"
                 ]
             }
-            headers, cookies, data = generate_request_params(cookies_str, api, data, 'POST')
-            response = requests.post(self.base_url + api, headers=headers, data=data.encode('utf-8'), cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, api, data, 'POST')
+            response = requests.post(self.base_url + api, headers=headers,
+                                     data=data.encode('utf-8'), cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -537,7 +560,8 @@ class XHS_Apis():
         note_list = []
         try:
             while True:
-                success, msg, res_json = self.search_note(query, cookies_str, page, sort_type_choice, note_type, note_time, note_range, pos_distance, geo, proxies)
+                success, msg, res_json = self.search_note(
+                    query, cookies_str, page, sort_type_choice, note_type, note_time, note_range, pos_distance, geo, proxies)
                 if not success:
                     raise Exception(msg)
                 if "items" not in res_json["data"]:
@@ -575,8 +599,10 @@ class XHS_Apis():
                     "request_id": "22471139-1723999898524"
                 }
             }
-            headers, cookies, data = generate_request_params(cookies_str, api, data, 'POST')
-            response = requests.post(self.base_url + api, headers=headers, data=data.encode('utf-8'), cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, api, data, 'POST')
+            response = requests.post(self.base_url + api, headers=headers,
+                                     data=data.encode('utf-8'), cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -596,7 +622,8 @@ class XHS_Apis():
         user_list = []
         try:
             while True:
-                success, msg, res_json = self.search_user(query, cookies_str, page, proxies)
+                success, msg, res_json = self.search_user(
+                    query, cookies_str, page, proxies)
                 if not success:
                     raise Exception(msg)
                 if "users" not in res_json["data"]:
@@ -632,8 +659,10 @@ class XHS_Apis():
                 "xsec_token": xsec_token
             }
             splice_api = splice_str(api, params)
-            headers, cookies, data = generate_request_params(cookies_str, splice_api, '', 'GET')
-            response = requests.get(self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, splice_api, '', 'GET')
+            response = requests.get(
+                self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -658,7 +687,8 @@ class XHS_Apis():
         time.sleep(0.5)
         try:
             while True:
-                success, msg, res_json = self.get_note_out_comment(note_id, cursor, xsec_token, cookies_str, proxies)
+                success, msg, res_json = self.get_note_out_comment(
+                    note_id, cursor, xsec_token, cookies_str, proxies)
 
                 if not success or not res_json or not res_json.get("data"):
                     retry_count += 1
@@ -666,7 +696,8 @@ class XHS_Apis():
                         if len(note_out_comment_list) > 0:
                             break
                         else:
-                            raise Exception(msg if msg else "多次重试后仍然获取不到评论数据(可能是风控拦截)")
+                            raise Exception(
+                                msg if msg else "多次重试后仍然获取不到评论数据(可能是风控拦截)")
                     time.sleep(20)
                     continue
 
@@ -714,8 +745,10 @@ class XHS_Apis():
                 "xsec_token": xsec_token
             }
             splice_api = splice_str(api, params)
-            headers, cookies, data = generate_request_params(cookies_str, splice_api, '', 'GET')
-            response = requests.get(self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, splice_api, '', 'GET')
+            response = requests.get(
+                self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -753,8 +786,10 @@ class XHS_Apis():
 
             retry_count = 0
             while True:
-                total_so_far = len(comment.get('sub_comments', [])) + len(inner_comment_list)
-                success, msg, res_json = self.get_note_inner_comment(comment, cursor, xsec_token, cookies_str, proxies)
+                total_so_far = len(comment.get(
+                    'sub_comments', [])) + len(inner_comment_list)
+                success, msg, res_json = self.get_note_inner_comment(
+                    comment, cursor, xsec_token, cookies_str, proxies)
 
                 if not success or not res_json or not res_json.get("data"):
                     retry_count += 1
@@ -762,7 +797,8 @@ class XHS_Apis():
                         if total_so_far > 0:
                             break
                         else:
-                            raise Exception(msg if msg else "多次重试后仍然获取不到二级评论数据(可能是风控拦截)")
+                            raise Exception(
+                                msg if msg else "多次重试后仍然获取不到二级评论数据(可能是风控拦截)")
                     wait_sec = 30 * retry_count
                     time.sleep(wait_sec)
                     continue
@@ -771,7 +807,8 @@ class XHS_Apis():
                 data = res_json.get("data", {})
                 comments = data.get("comments", [])
                 inner_comment_list.extend(comments)
-                total_so_far = len(comment.get('sub_comments', [])) + len(inner_comment_list)
+                total_so_far = len(comment.get(
+                    'sub_comments', [])) + len(inner_comment_list)
 
                 if total_so_far >= 5:
                     break
@@ -807,12 +844,14 @@ class XHS_Apis():
             note_id = urlParse.path.split("/")[-1]
             kvs = urlParse.query.split('&')
             kvDist = {kv.split('=')[0]: kv.split('=')[1] for kv in kvs}
-            success, msg, out_comment_list = self.get_note_all_out_comment(note_id, kvDist['xsec_token'], cookies_str, proxies)
+            success, msg, out_comment_list = self.get_note_all_out_comment(
+                note_id, kvDist['xsec_token'], cookies_str, proxies)
             if not success:
                 raise Exception(msg)
             import time
             for i, comment in enumerate(out_comment_list):
-                success, msg, new_comment = self.get_note_all_inner_comment(comment, kvDist['xsec_token'], cookies_str, proxies)
+                success, msg, new_comment = self.get_note_all_inner_comment(
+                    comment, kvDist['xsec_token'], cookies_str, proxies)
                 if not success:
                     success = True
                 if i < len(out_comment_list) - 1:
@@ -832,8 +871,10 @@ class XHS_Apis():
         res_json = None
         try:
             api = "/api/sns/web/unread_count"
-            headers, cookies, data = generate_request_params(cookies_str, api, '', 'GET')
-            response = requests.get(self.base_url + api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, api, '', 'GET')
+            response = requests.get(
+                self.base_url + api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -856,8 +897,10 @@ class XHS_Apis():
                 "cursor": cursor
             }
             splice_api = splice_str(api, params)
-            headers, cookies, data = generate_request_params(cookies_str, splice_api, '', 'GET')
-            response = requests.get(self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, splice_api, '', 'GET')
+            response = requests.get(
+                self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -875,7 +918,8 @@ class XHS_Apis():
         metions_list = []
         try:
             while True:
-                success, msg, res_json = self.get_metions(cursor, cookies_str, proxies)
+                success, msg, res_json = self.get_metions(
+                    cursor, cookies_str, proxies)
                 if not success:
                     raise Exception(msg)
                 metions = res_json["data"]["message_list"]
@@ -906,8 +950,10 @@ class XHS_Apis():
                 "cursor": cursor
             }
             splice_api = splice_str(api, params)
-            headers, cookies, data = generate_request_params(cookies_str, splice_api, '', 'GET')
-            response = requests.get(self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, splice_api, '', 'GET')
+            response = requests.get(
+                self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -925,7 +971,8 @@ class XHS_Apis():
         likesAndcollects_list = []
         try:
             while True:
-                success, msg, res_json = self.get_likesAndcollects(cursor, cookies_str, proxies)
+                success, msg, res_json = self.get_likesAndcollects(
+                    cursor, cookies_str, proxies)
                 if not success:
                     raise Exception(msg)
                 likesAndcollects = res_json["data"]["message_list"]
@@ -956,8 +1003,10 @@ class XHS_Apis():
                 "cursor": cursor
             }
             splice_api = splice_str(api, params)
-            headers, cookies, data = generate_request_params(cookies_str, splice_api, '', 'GET')
-            response = requests.get(self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
+            headers, cookies, data = generate_request_params(
+                cookies_str, splice_api, '', 'GET')
+            response = requests.get(
+                self.base_url + splice_api, headers=headers, cookies=cookies, proxies=proxies)
             res_json = response.json()
             success, msg = res_json["success"], res_json["msg"]
         except Exception as e:
@@ -975,7 +1024,8 @@ class XHS_Apis():
         connections_list = []
         try:
             while True:
-                success, msg, res_json = self.get_new_connections(cursor, cookies_str, proxies)
+                success, msg, res_json = self.get_new_connections(
+                    cursor, cookies_str, proxies)
                 if not success:
                     raise Exception(msg)
                 connections = res_json["data"]["message_list"]
@@ -1006,12 +1056,12 @@ class XHS_Apis():
             url = f"https://www.xiaohongshu.com/explore/{note_id}"
             response = requests.get(url, headers=headers)
             res = response.text
-            video_addr = re.findall(r'<meta name="og:video" content="(.*?)">', res)[0]
+            video_addr = re.findall(
+                r'<meta name="og:video" content="(.*?)">', res)[0]
         except Exception as e:
             success = False
             msg = str(e)
         return success, msg, video_addr
-
 
     @staticmethod
     def get_note_no_water_img(img_url):
@@ -1026,7 +1076,8 @@ class XHS_Apis():
         try:
             # https://sns-webpic-qc.xhscdn.com/202403211626/c4fcecea4bd012a1fe8d2f1968d6aa91/110/0/01e50c1c135e8c010010000000018ab74db332_0.jpg!nd_dft_wlteh_webp_3
             if '.jpg' in img_url:
-                img_id = '/'.join([split for split in img_url.split('/')[-3:]]).split('!')[0]
+                img_id = '/'.join([split for split in img_url.split('/')
+                                  [-3:]]).split('!')[0]
                 # return f"http://ci.xiaohongshu.com/{img_id}?imageview2/2/w/1920/format/png"
                 # return f"http://ci.xiaohongshu.com/{img_id}?imageview2/2/w/format/png"
                 # return f'https://sns-img-hw.xhscdn.com/{img_id}'
@@ -1049,6 +1100,7 @@ class XHS_Apis():
             msg = str(e)
         return success, msg, new_url
 
+
 if __name__ == '__main__':
     """
         此文件为小红书api的使用示例
@@ -1059,30 +1111,37 @@ if __name__ == '__main__':
     cookies_str = r''
     # 获取用户信息
     user_url = 'https://www.xiaohongshu.com/user/profile/67a332a2000000000d008358?xsec_token=ABTf9yz4cLHhTycIlksF0jOi1yIZgfcaQ6IXNNGdKJ8xg=&xsec_source=pc_feed'
-    success, msg, user_info = xhs_apis.get_user_info('67a332a2000000000d008358', cookies_str)
-    logger.info(f'获取用户信息结果 {json.dumps(user_info, ensure_ascii=False)}: {success}, msg: {msg}')
-    success, msg, note_list = xhs_apis.get_user_all_notes(user_url, cookies_str)
-    logger.info(f'获取用户所有笔记结果 {json.dumps(note_list, ensure_ascii=False)}: {success}, msg: {msg}')
+    success, msg, user_info = xhs_apis.get_user_info(
+        '67a332a2000000000d008358', cookies_str)
+    logger.info(
+        f'获取用户信息结果 {json.dumps(user_info, ensure_ascii=False)}: {success}, msg: {msg}')
+    success, msg, note_list = xhs_apis.get_user_all_notes(
+        user_url, cookies_str)
+    logger.info(
+        f'获取用户所有笔记结果 {json.dumps(note_list, ensure_ascii=False)}: {success}, msg: {msg}')
     # 获取笔记信息
     note_url = r'https://www.xiaohongshu.com/explore/67d7c713000000000900e391?xsec_token=AB1ACxbo5cevHxV_bWibTmK8R1DDz0NnAW1PbFZLABXtE=&xsec_source=pc_user'
     success, msg, note_info = xhs_apis.get_note_info(note_url, cookies_str)
-    logger.info(f'获取笔记信息结果 {json.dumps(note_info, ensure_ascii=False)}: {success}, msg: {msg}')
+    logger.info(
+        f'获取笔记信息结果 {json.dumps(note_info, ensure_ascii=False)}: {success}, msg: {msg}')
     # 获取搜索关键词
     query = "榴莲"
-    success, msg, search_keyword = xhs_apis.get_search_keyword(query, cookies_str)
-    logger.info(f'获取搜索关键词结果 {json.dumps(search_keyword, ensure_ascii=False)}: {success}, msg: {msg}')
+    success, msg, search_keyword = xhs_apis.get_search_keyword(
+        query, cookies_str)
+    logger.info(
+        f'获取搜索关键词结果 {json.dumps(search_keyword, ensure_ascii=False)}: {success}, msg: {msg}')
     # 搜索笔记
     query = "榴莲"
     query_num = 10
     sort = "general"
     note_type = 0
-    success, msg, notes = xhs_apis.search_some_note(query, query_num, cookies_str, sort, note_type)
-    logger.info(f'搜索笔记结果 {json.dumps(notes, ensure_ascii=False)}: {success}, msg: {msg}')
+    success, msg, notes = xhs_apis.search_some_note(
+        query, query_num, cookies_str, sort, note_type)
+    logger.info(
+        f'搜索笔记结果 {json.dumps(notes, ensure_ascii=False)}: {success}, msg: {msg}')
     # 获取笔记评论
     note_url = r'https://www.xiaohongshu.com/explore/67d7c713000000000900e391?xsec_token=AB1ACxbo5cevHxV_bWibTmK8R1DDz0NnAW1PbFZLABXtE=&xsec_source=pc_user'
-    success, msg, note_all_comment = xhs_apis.get_note_all_comment(note_url, cookies_str)
-    logger.info(f'获取笔记评论结果 {json.dumps(note_all_comment, ensure_ascii=False)}: {success}, msg: {msg}')
-
-
-
-
+    success, msg, note_all_comment = xhs_apis.get_note_all_comment(
+        note_url, cookies_str)
+    logger.info(
+        f'获取笔记评论结果 {json.dumps(note_all_comment, ensure_ascii=False)}: {success}, msg: {msg}')
