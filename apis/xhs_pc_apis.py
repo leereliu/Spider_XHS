@@ -648,29 +648,44 @@ class XHS_Apis():
             :param cookies_str 你的cookies
             返回笔记的全部一级评论
         """
+        import time
         cursor = ''
         note_out_comment_list = []
+        success = True
+        msg = 'success'
+        retry_count = 0
+
+        time.sleep(0.5)
         try:
             while True:
                 success, msg, res_json = self.get_note_out_comment(note_id, cursor, xsec_token, cookies_str, proxies)
-                if not success:
-                    raise Exception(msg)
-                
+
+                if not success or not res_json or not res_json.get("data"):
+                    retry_count += 1
+                    if retry_count > 3:
+                        if len(note_out_comment_list) > 0:
+                            break
+                        else:
+                            raise Exception(msg if msg else "多次重试后仍然获取不到评论数据(可能是风控拦截)")
+                    time.sleep(20)
+                    continue
+
+                retry_count = 0
                 data = res_json.get("data", {})
                 comments = data.get("comments", [])
-                
                 note_out_comment_list.extend(comments)
-                
+
                 if len(note_out_comment_list) >= 10:
                     note_out_comment_list = note_out_comment_list[:10]
                     break
-                    
+
                 if 'cursor' in data and data['cursor']:
                     cursor = str(data["cursor"])
                 else:
                     break
-                if len(note_out_comment_list) == 0 or not data.get("has_more", False):
+                if not data.get("has_more", False):
                     break
+                time.sleep(0.5)
         except Exception as e:
             success = False
             msg = str(e)
@@ -715,43 +730,63 @@ class XHS_Apis():
             :param cookies_str 你的cookies
             返回笔记的全部二级评论
         """
+        import time
+        success = True
+        msg = 'success'
         try:
             if 'sub_comments' not in comment:
                 comment['sub_comments'] = []
-                
-            if len(comment.get('sub_comments', [])) >= 5:
+
+            existing = len(comment.get('sub_comments', []))
+
+            if existing >= 5:
                 comment['sub_comments'] = comment['sub_comments'][:5]
                 return True, 'success', comment
-                
+
             if not comment.get('sub_comment_has_more', False):
                 return True, 'success', comment
-                
+
             cursor = comment.get('sub_comment_cursor', '')
             inner_comment_list = []
-            
+
+            time.sleep(0.5)
+
+            retry_count = 0
             while True:
+                total_so_far = len(comment.get('sub_comments', [])) + len(inner_comment_list)
                 success, msg, res_json = self.get_note_inner_comment(comment, cursor, xsec_token, cookies_str, proxies)
-                if not success:
-                    raise Exception(msg)
-                    
+
+                if not success or not res_json or not res_json.get("data"):
+                    retry_count += 1
+                    if retry_count > 3:
+                        if total_so_far > 0:
+                            break
+                        else:
+                            raise Exception(msg if msg else "多次重试后仍然获取不到二级评论数据(可能是风控拦截)")
+                    wait_sec = 30 * retry_count
+                    time.sleep(wait_sec)
+                    continue
+
+                retry_count = 0
                 data = res_json.get("data", {})
                 comments = data.get("comments", [])
-                
                 inner_comment_list.extend(comments)
-                
-                if len(comment.get('sub_comments', [])) + len(inner_comment_list) >= 5:
+                total_so_far = len(comment.get('sub_comments', [])) + len(inner_comment_list)
+
+                if total_so_far >= 5:
                     break
-                    
+
                 if 'cursor' in data and data['cursor']:
                     cursor = str(data["cursor"])
                 else:
                     break
                 if not data.get("has_more", False):
                     break
-                    
+                time.sleep(0.5)
+
             comment['sub_comments'].extend(inner_comment_list)
             comment['sub_comments'] = comment['sub_comments'][:5]
-            
+
         except Exception as e:
             success = False
             msg = str(e)
@@ -775,13 +810,17 @@ class XHS_Apis():
             success, msg, out_comment_list = self.get_note_all_out_comment(note_id, kvDist['xsec_token'], cookies_str, proxies)
             if not success:
                 raise Exception(msg)
-            for comment in out_comment_list:
+            import time
+            for i, comment in enumerate(out_comment_list):
                 success, msg, new_comment = self.get_note_all_inner_comment(comment, kvDist['xsec_token'], cookies_str, proxies)
                 if not success:
-                    raise Exception(msg)
+                    success = True
+                if i < len(out_comment_list) - 1:
+                    time.sleep(0.5)
         except Exception as e:
             success = False
             msg = str(e)
+            logger.error(f"[评论总入口] 异常: {e}")
         return success, msg, out_comment_list
 
     def get_unread_message(self, cookies_str: str, proxies: dict = None):
